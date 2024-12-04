@@ -116,7 +116,7 @@ def init():
                           0,
                           math.atan2(next_waypoint_raw[1] - prev_waypoint_raw[1], next_waypoint_raw[0] - prev_waypoint_raw[0]),
                           configs["max_vel"],
-                          math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_idx, next_waypoint_raw)/configs["L"])))
+                          math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_idx, next_waypoint_raw)*configs["L"])))
 
     global curr_waypoint_idx
     curr_waypoint_idx = 0
