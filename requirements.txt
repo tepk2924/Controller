@@ -1,2 +1,10 @@
 #ROS == noetic
 #python == 3.8.10
+
+#For visualizing map only, Not in actual simulation.
+trimesh
+pyglet == 1.5.29
+scipy
+
+#For actually running node
+Pyyaml
