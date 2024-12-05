@@ -22,8 +22,8 @@
     차의 절대좌표계 기준 현재 위치와 방향을 각각 $x_c$, $y_c$, ${\theta}_c$ 라고 하고, 차가 현재 도달하고자 하는 절대좌표계 기준 waypoint의 위치와 방향을 $x_r$, $y_r$, ${\theta}_r$ 라고 하자.   
     또한, waypoint는 기준 속력 $v_r$ 과 기준 각속도 ${\omega}_r$ 또한 가진다.   
     waypoint의 차 좌표계 기준 위치 $x_e$, $y_e$ 와 방향 ${\theta}_e$ 은 다음과 같다.   
-    $$
+    $
     \begin{bmatrix} x_e \\\ y_e \\\ \end{bmatrix} $$
-    $$
+    $
      = \begin{bmatrix} \cos({\theta}_c) & -\sin({\theta}_c) \\\ \sin({\theta}_c) & \cos({\theta}_c) \\\ \end{bmatrix}\begin{bmatrix} x_r - x_c \\\ y_r - y_e \\\ \end{bmatrix}
     $$
