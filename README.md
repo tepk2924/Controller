@@ -23,7 +23,10 @@
     또한, waypoint는 기준 속력 $v_r$ 과 기준 각속도 ${\omega}_r$ 또한 가진다.   
     waypoint의 차 좌표계 기준 위치 $x_e$, $y_e$ 와 방향 ${\theta}_e$ 은 다음과 같다.   
     $x_e = \cos({\theta}_c)(x_r - x_c) + \sin({\theta}_c)(y_r - y_e)$   
-    $y_e = -\sin({\theta}_c)(x_r - x_c) + \cos({\theta}_c)(y_r - y_e)$
+    $y_e = -\sin({\theta}_c)(x_r - x_c) + \cos({\theta}_c)(y_r - y_e)$   
+    ${\theta}_e = {\theta}_r - {\theta}_c$
     2. 카나야마 컨트롤러   
     카나야마 컨트롤러는 waypoint의 에러 $x_e$, $y_e$ 와 방향 ${\theta}_e$ 와 기준 속력 $v_r$ 과 각속도 ${\omega}_r$ 를 입력으로 받아 차가 내야하는 속력과 각속도를 산출한다.
-    카나야마 컨르롤러의 게인 $K_x$, $K_y$, 그리고 $K_{\omega}$ 를 설정할 수 있으며, 컨트롤러가 산출하는 속력을 $v$, 각속도를 ${\omega}$라 한다면, 아래와 같다. $v = v_r \cos({\theta}_e) + K_{x}x_{e}$
+    카나야마 컨르롤러의 게인 $K_x$, $K_y$, 그리고 $K_{\omega}$ 를 설정할 수 있으며, 컨트롤러가 산출하는 속력을 $v$, 각속도를 ${\omega}$ 라 한다면, 아래와 같다.   
+    $v = v_r\cos({\theta}_e) + K_{x}x_{e}$   
+    ${\omega} = {\omega}_r + v_r(K_{y}y_{e} + K_{\omega}\sin({\theta}_e))$
