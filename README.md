@@ -23,9 +23,8 @@
     또한, waypoint는 기준 속력 $v_r$ 과 기준 각속도 ${\omega}_r$ 또한 가진다.   
     waypoint의 차 좌표계 기준 위치 $x_e$, $y_e$ 와 방향 ${\theta}_e$ 은 다음과 같다.   
 
-```math
-\begin{bmatrix} x_e \\\ y_e \end{bmatrix} = \begin{bmatrix} \cos({\theta}_c) & \sin({\theta}_c) \\\ -\sin({\theta}_c) & \cos({\theta}_c) \end{bmatrix}\begin{bmatrix} x_r - x_c \\\ y_r - y_e \end{bmatrix}
-    ```
+$$\begin{bmatrix} x_e \\\ y_e \end{bmatrix} = \begin{bmatrix} \cos({\theta}_c) & \sin({\theta}_c) \\\ -\sin({\theta}_c) & \cos({\theta}_c) \end{bmatrix}\begin{bmatrix} x_r - x_c \\\ y_r - y_e \end{bmatrix}$$
+
 
     2. 카나야마 컨트롤러   
     카나야마 컨트롤러는 waypoint의 에러 $x_e$, $y_e$ 와 방향 ${\theta}_e$ 와 기준 속력 $v_r$ 과 각속도 ${\omega}_r$ 를 입력으로 받아 차가 내야하는 속력과 각속도를 산출한다.
