@@ -8,3 +8,5 @@ scipy
 
 #For actually running node
 Pyyaml
+catkin_pkg
+rospkg

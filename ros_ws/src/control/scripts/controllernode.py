@@ -87,13 +87,13 @@ def init():
     여기다가 waypoint들 (csv 파일 형식) 불러오는 코드를 넣을 것.
     '''
     repo_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-    with open(os.path.join(repo_dir, "path", "track_data.csv"), "r") as f:
+    with open(os.path.join(repo_dir, "path", "racing_line_midpoints.csv"), "r") as f:
         lines = f.readlines()
 
     #컨피그 yaml 파일 로드
     global configs
     with open(os.path.join(repo_dir, "config.yaml")) as f:
-        configs:dict = yaml.safe_load(f)
+        configs = yaml.safe_load(f)
 
     #Only Contains X, Y, Z coordinate
     waypoints_raw = [list(map(float, line.replace(","," ").split())) for line in lines]
@@ -116,7 +116,7 @@ def init():
                           0,
                           math.atan2(next_waypoint_raw[1] - prev_waypoint_raw[1], next_waypoint_raw[0] - prev_waypoint_raw[0]),
                           configs["max_vel"],
-                          math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_idx, next_waypoint_raw)*configs["L"])))
+                          math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_raw, next_waypoint_raw)*configs["L"])))
 
     global curr_waypoint_idx
     curr_waypoint_idx = 0
@@ -128,6 +128,7 @@ def callback(data:Float32MultiArray):
     '''
     여기에 컨트롤러 메인 부분과 publish하는 코드를 넣을 거 같음
     '''
+    global curr_waypoint_idx
     x, y, theta, vel, steer = data.data
     #만약 그 현재 waypoint를 지나지 않았으면 while loop 통과, 그렇지 않다면 지나지 않은 waypoint를 찾을 때까지 whule loop를 돈다.
     while True:
@@ -164,7 +165,7 @@ def callback(data:Float32MultiArray):
     msg.vector.z = brake
 
     #Publish
-    pub = rospy.Publisher("/mobile_system_control/control_msg", Vector3Stamped)
+    pub = rospy.Publisher("/mobile_system_control/control_msg", Vector3Stamped, queue_size=10)
     pub.publish(msg)
     return 
 

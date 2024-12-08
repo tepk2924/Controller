@@ -8,7 +8,7 @@
         2. 일단 ROS1 환경 (Noetic)을 구성하고, 파이썬을 이용할 수 있도록 세팅.
         3. requirments.txt에 적힌 파이썬 라이브러리 설치 (가상환경 추천).
         4. ```cd ros_ws```
-        5. ```catkin_make``` 혹은, 라이브러리를 가상환경에 설치했을 경우, ```catkin_make -DPYTHON_EXECUTABLE=<가상환경 경로>/bin/python3```
+        5. ```catkin_make``` 혹은, 라이브러리를 가상환경에 설치했을 경우, ```catkin_make -DPYTHON_EXECUTABLE=<가상환경 경로>/bin/python3``` (-DPYTHON_EXECUTABLE 뒤에 붙어야 하는 문자열은 가상환경 켜진 상태에서 파이썬 키고 import sys 한 다음 sys.executable 출력하면 알 수 있음.)
     2. ROS로 돌리기
 
 2. 목적   
