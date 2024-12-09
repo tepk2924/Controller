@@ -5,7 +5,7 @@ Kw: 1
 
 #Car Specification
 max_vel: 5.55 #Equal to 20km/h
-min_vel: 0
+min_vel: 0.1
 max_steer: 0.349 #Equal to +- 20 degree
 min_steer: -0.349
 L: 1.023 #Car length b/w wheels

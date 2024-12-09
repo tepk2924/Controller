@@ -1,3 +1,3 @@
 <launch>
-    <node pkg="control" type="controllernode.py" name="controllernode" respawn="false"/>
+    <node pkg="control" type="controllernode.py" name="controllernode" respawn="false" output="screen"/>
 </launch>

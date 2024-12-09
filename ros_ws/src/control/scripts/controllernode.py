@@ -129,7 +129,12 @@ def callback(data:Float32MultiArray):
     여기에 컨트롤러 메인 부분과 publish하는 코드를 넣을 거 같음
     '''
     global curr_waypoint_idx
+    global configs
+    global waypoints
+    global waypoints_num
+    global kanayama_controller
     x, y, theta, vel, steer = data.data
+    print("1", x, y, theta, vel, steer)
     #만약 그 현재 waypoint를 지나지 않았으면 while loop 통과, 그렇지 않다면 지나지 않은 waypoint를 찾을 때까지 whule loop를 돈다.
     while True:
         x_ref, y_ref, z_ref, theta_ref, v_ref, steer_ref = waypoints[curr_waypoint_idx]
@@ -139,9 +144,13 @@ def callback(data:Float32MultiArray):
         if x_err < 0: 
             break
         curr_waypoint_idx += 1
+    print("2", v_ref, steer_ref)
     y_err = -math.sin(theta)*x_sub + math.cos(theta)*y_sub
     theta_err = angle_confine(theta_ref - theta)
+    print("3", y_err, theta_err)
     v_control, steer_control = kanayama_controller(x_err, y_err, theta_err, v_ref, steer_ref)
+
+    print("4", v_control, steer_control)
     
     #조향각을 -1.0에서 1.0 범위로 변환
     steer_normalized = steer_control/configs["max_steer"]
@@ -167,7 +176,17 @@ def callback(data:Float32MultiArray):
     #Publish
     pub = rospy.Publisher("/mobile_system_control/control_msg", Vector3Stamped, queue_size=10)
     pub.publish(msg)
-    return 
+
+    # #debug
+    # pub2 = rospy.Publisher("/debug", Vector3Stamped, queue_size=10)
+    # msg2 = Vector3Stamped()
+    # msg2.header.frame_id = "3"
+    # msg2.vector.x = v_ref
+    # msg2.vector.y = steer_ref
+    # msg2.vector.z = 0
+    # pub2.publish(msg2)
+    # return
+
 
 def main():
     '''
