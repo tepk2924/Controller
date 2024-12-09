@@ -140,41 +140,38 @@ def callback(data:Float32MultiArray):
     global kanayama_controller
     x, y, theta, vel, steer = data.data
     #만약 그 현재 waypoint를 지나지 않았으면 while loop 통과, 그렇지 않다면 지나지 않은 waypoint를 찾을 때까지 whule loop를 돈다.
-    try:
-        while True:
-            x_ref, y_ref, z_ref, theta_ref, v_ref, steer_ref = waypoints[curr_waypoint_idx]
-            x_car_by_w = math.cos(theta_ref)*(x - x_ref) + math.sin(theta_ref)*(y - y_ref)
-            # y_car_by_w = math.sin(-theta_ref)*(x - x_ref) + math.cos(theta_ref)*(y - y_ref)
-            if x_car_by_w < 0: #레퍼런스 기준 차의 좌표가 레퍼런스 방향 기준 뒤쳐지는 레퍼런스 지점의 번호를 찾는 것이 break 조건.
-                break
-            curr_waypoint_idx += 1
-        x_sub = x_ref - x
-        y_sub = y_ref - y
-        x_err = math.cos(theta)*x_sub + math.sin(theta)*y_sub
-        y_err = -math.sin(theta)*x_sub + math.cos(theta)*y_sub
-        theta_err = angle_confine(theta_ref - theta)
-        v_control, steer_control = kanayama_controller(x_err, y_err, theta_err, v_ref, steer_ref)
-        if configs["debug_console_output"]:
-            print(f"1. Data Received: {x = }, {y = }, {theta = }, {vel = }, {steer = }")
-            print(f"2. Reference Point Info: {curr_waypoint_idx = }, {x_ref = }, {y_ref = }, {theta_ref = }, {v_ref = }, {steer_ref = }")
-            print(f"3. Error Term Calculated: {x_err = }, {y_err = }, {theta_err = }")
-            print(f"4. Kanayama Result: {v_control = }, {steer_control = }")
-        
-        #조향각을 -1.0에서 1.0 범위로 변환
-        steer_normalized = steer_control/configs["max_steer"]
-        if steer_normalized > 1.0:
-            steer_normalized = 1.0
-        elif steer_normalized < -1.0:
-            steer_normalized = -1.0
+    while True:
+        x_ref, y_ref, z_ref, theta_ref, v_ref, steer_ref = waypoints[curr_waypoint_idx]
+        x_car_by_w = math.cos(theta_ref)*(x - x_ref) + math.sin(theta_ref)*(y - y_ref)
+        # y_car_by_w = math.sin(-theta_ref)*(x - x_ref) + math.cos(theta_ref)*(y - y_ref)
+        if x_car_by_w < 0: #레퍼런스 기준 차의 좌표가 레퍼런스 방향 기준 뒤쳐지는 레퍼런스 지점의 번호를 찾는 것이 break 조건.
+            break
+        curr_waypoint_idx = (curr_waypoint_idx + 1) % waypoints_num
+    x_sub = x_ref - x
+    y_sub = y_ref - y
+    x_err = math.cos(theta)*x_sub + math.sin(theta)*y_sub
+    y_err = -math.sin(theta)*x_sub + math.cos(theta)*y_sub
+    theta_err = angle_confine(theta_ref - theta)
+    v_control, steer_control = kanayama_controller(x_err, y_err, theta_err, v_ref, steer_ref)
+    if configs["debug_console_output"]:
+        print(f"1. Data Received: {x = }, {y = }, {theta = }, {vel = }, {steer = }")
+        print(f"2. Reference Point Info: {curr_waypoint_idx = }, {x_ref = }, {y_ref = }, {theta_ref = }, {v_ref = }, {steer_ref = }")
+        print(f"3. Error Term Calculated: {x_err = }, {y_err = }, {theta_err = }")
+        print(f"4. Kanayama Result: {v_control = }, {steer_control = }")
+    
+    #조향각을 -1.0에서 1.0 범위로 변환
+    steer_normalized = steer_control/configs["max_steer"]
+    if steer_normalized > 1.0:
+        steer_normalized = 1.0
+    elif steer_normalized < -1.0:
+        steer_normalized = -1.0
 
-        if vel < v_control:
-            throttle, brake = 1.0, 0.0
-        elif vel > v_control:
-            throttle, brake = 0.0, 1.0
-        else:
-            throttle, brake = 0.0, 0.0
-    except IndexError: #마지막 waypoint를 지난 후
-        throttle, brake, steer_normalized = 1.0, 0.0, 0.0
+    if vel < v_control:
+        throttle, brake = 1.0, 0.0
+    elif vel > v_control:
+        throttle, brake = 0.0, 1.0
+    else:
+        throttle, brake = 0.0, 0.0
 
     #Vector3Stamped 관련 헤더와 데이터 넣는 코드 구현
     msg:Vector3Stamped = Vector3Stamped()
