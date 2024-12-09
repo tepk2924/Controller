@@ -2,4 +2,5 @@ venv
 venv/
 ros_ws/build
 ros_ws/devel
-noetic_env
+map
+test.py

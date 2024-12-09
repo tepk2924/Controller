@@ -1,1 +1,2 @@
-print(" this is Chohyunjoon test file")
+A = [1, 2, 3]
+A[6]

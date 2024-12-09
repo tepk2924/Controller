@@ -10,3 +10,7 @@ scipy
 Pyyaml
 catkin_pkg
 rospkg
+
+#For carla-python-ROS
+pip == 24.3.1 #To install carla-python API
+carla == 0.9.15

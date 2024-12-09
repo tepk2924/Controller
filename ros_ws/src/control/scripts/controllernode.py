@@ -98,12 +98,17 @@ def init():
     #Only Contains X, Y, Z coordinate
     waypoints_raw = [list(map(float, line.replace(","," ").split())) for line in lines]
 
+    #만약 받은 파일의 시작 지점과 끝 지점이 같은 경우, 끝 지점을 삭제함.
+    if distXY(waypoints_raw[0], waypoints_raw[-1]) <= 0.01:
+        waypoints_raw = waypoints_raw[:-1]
+        if configs["debug_console_output"]:
+            print("waypoint 파일의 첫 지점과 끝지점이 같아서 전처리 실시함.")
+
     global waypoints_num
     waypoints_num = len(waypoints_raw)
     
     #Contain X, Y, Z, theta, V, and steer.
     global waypoints
-    #TODO: waypoint의 방향(theta)과 레버런스 속도 및 조향 생성하는 코드를 삽입할 것.
     waypoints = []
     for idx in range(waypoints_num):
         curr_waypoint_raw = waypoints_raw[idx]
@@ -134,37 +139,42 @@ def callback(data:Float32MultiArray):
     global waypoints_num
     global kanayama_controller
     x, y, theta, vel, steer = data.data
-    print("1", x, y, theta, vel, steer)
     #만약 그 현재 waypoint를 지나지 않았으면 while loop 통과, 그렇지 않다면 지나지 않은 waypoint를 찾을 때까지 whule loop를 돈다.
-    while True:
-        x_ref, y_ref, z_ref, theta_ref, v_ref, steer_ref = waypoints[curr_waypoint_idx]
+    try:
+        while True:
+            x_ref, y_ref, z_ref, theta_ref, v_ref, steer_ref = waypoints[curr_waypoint_idx]
+            x_car_by_w = math.cos(theta_ref)*(x - x_ref) + math.sin(theta_ref)*(y - y_ref)
+            # y_car_by_w = math.sin(-theta_ref)*(x - x_ref) + math.cos(theta_ref)*(y - y_ref)
+            if x_car_by_w < 0: #레퍼런스 기준 차의 좌표가 레퍼런스 방향 기준 뒤쳐지는 레퍼런스 지점의 번호를 찾는 것이 break 조건.
+                break
+            curr_waypoint_idx += 1
         x_sub = x_ref - x
         y_sub = y_ref - y
         x_err = math.cos(theta)*x_sub + math.sin(theta)*y_sub
-        if x_err < 0: 
-            break
-        curr_waypoint_idx += 1
-    print("2", v_ref, steer_ref)
-    y_err = -math.sin(theta)*x_sub + math.cos(theta)*y_sub
-    theta_err = angle_confine(theta_ref - theta)
-    print("3", y_err, theta_err)
-    v_control, steer_control = kanayama_controller(x_err, y_err, theta_err, v_ref, steer_ref)
+        y_err = -math.sin(theta)*x_sub + math.cos(theta)*y_sub
+        theta_err = angle_confine(theta_ref - theta)
+        v_control, steer_control = kanayama_controller(x_err, y_err, theta_err, v_ref, steer_ref)
+        if configs["debug_console_output"]:
+            print(f"1. Data Received: {x = }, {y = }, {theta = }, {vel = }, {steer = }")
+            print(f"2. Reference Point Info: {curr_waypoint_idx = }, {x_ref = }, {y_ref = }, {theta_ref = }, {v_ref = }, {steer_ref = }")
+            print(f"3. Error Term Calculated: {x_err = }, {y_err = }, {theta_err = }")
+            print(f"4. Kanayama Result: {v_control = }, {steer_control = }")
+        
+        #조향각을 -1.0에서 1.0 범위로 변환
+        steer_normalized = steer_control/configs["max_steer"]
+        if steer_normalized > 1.0:
+            steer_normalized = 1.0
+        elif steer_normalized < -1.0:
+            steer_normalized = -1.0
 
-    print("4", v_control, steer_control)
-    
-    #조향각을 -1.0에서 1.0 범위로 변환
-    steer_normalized = steer_control/configs["max_steer"]
-    if steer_normalized > 1.0:
-        steer_normalized = 1.0
-    elif steer_normalized < -1.0:
-        steer_normalized = -1.0
-
-    if vel < v_control:
-        throttle, brake = 1.0, 0.0
-    elif vel > v_control:
-        throttle, brake = 0.0, 1.0
-    else:
-        throttle, brake = 0.0, 0.0
+        if vel < v_control:
+            throttle, brake = 1.0, 0.0
+        elif vel > v_control:
+            throttle, brake = 0.0, 1.0
+        else:
+            throttle, brake = 0.0, 0.0
+    except IndexError: #마지막 waypoint를 지난 후
+        throttle, brake, steer_normalized = 1.0, 0.0, 0.0
 
     #Vector3Stamped 관련 헤더와 데이터 넣는 코드 구현
     msg:Vector3Stamped = Vector3Stamped()
