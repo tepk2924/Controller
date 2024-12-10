@@ -158,7 +158,7 @@ def callback(data:Float32MultiArray):
         print(f"1. Data Received: {x = }, {y = }, {theta = }, {vel = }, {steer = }")
         print(f"2. Reference Point Info: {curr_waypoint_idx = }, {x_ref = }, {y_ref = }, {theta_ref = }, {v_ref = }, {steer_ref = }")
         print(f"3. Error Term Calculated: {x_err = }, {y_err = }, {theta_err = }")
-        print(f"4. Kanayama Result: {v_control = }, {steer_control = }")
+        print(f"5. Kanayama Result: {v_control = }, {steer_control = }")
     
     #조향각을 -1.0에서 1.0 범위로 변환
     steer_normalized = -steer_control/configs["max_steer"]
