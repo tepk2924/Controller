@@ -1,7 +1,7 @@
 #For Kanayama
 Kx: 0
-Ky: 1
-Kw: 1
+Ky: 0.1
+Kw: 0.1
 
 #Car Specification
 max_vel: 5.55 #Equal to 20km/h

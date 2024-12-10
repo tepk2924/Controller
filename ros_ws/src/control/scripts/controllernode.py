@@ -98,9 +98,9 @@ def init():
     #Only Contains X, Y, Z coordinate
     waypoints_raw = [list(map(float, line.replace(","," ").split())) for line in lines]
 
-    #만약 받은 파일의 시작 지점과 끝 지점이 같은 경우, 끝 지점을 삭제함.
+    #만약 받은 파일의 시작 지점과 끝 지점이 같은 경우, 시작 지점을 삭제함.
     if distXY(waypoints_raw[0], waypoints_raw[-1]) <= 0.01:
-        waypoints_raw = waypoints_raw[:-1]
+        waypoints_raw = waypoints_raw[1:]
         if configs["debug_console_output"]:
             print("waypoint 파일의 첫 지점과 끝지점이 같아서 전처리 실시함.")
 
@@ -121,7 +121,8 @@ def init():
                           0,
                           math.atan2(next_waypoint_raw[1] - prev_waypoint_raw[1], next_waypoint_raw[0] - prev_waypoint_raw[0]),
                           configs["max_vel"],
-                          math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_raw, next_waypoint_raw)*configs["L"])))
+                          #math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_raw, next_waypoint_raw)*configs["L"])
+                          0))
 
     global curr_waypoint_idx
     curr_waypoint_idx = 0
@@ -144,7 +145,7 @@ def callback(data:Float32MultiArray):
         x_ref, y_ref, z_ref, theta_ref, v_ref, steer_ref = waypoints[curr_waypoint_idx]
         x_car_by_w = math.cos(theta_ref)*(x - x_ref) + math.sin(theta_ref)*(y - y_ref)
         # y_car_by_w = math.sin(-theta_ref)*(x - x_ref) + math.cos(theta_ref)*(y - y_ref)
-        if x_car_by_w < 0: #레퍼런스 기준 차의 좌표가 레퍼런스 방향 기준 뒤쳐지는 레퍼런스 지점의 번호를 찾는 것이 break 조건.
+        if x_car_by_w < -0.1: #레퍼런스 기준 차의 좌표가 레퍼런스 방향 기준 어느 정도 이상 뒤쳐지는 레퍼런스 지점의 번호를 찾는 것이 break 조건.
             break
         curr_waypoint_idx = (curr_waypoint_idx + 1) % waypoints_num
     x_sub = x_ref - x
@@ -160,7 +161,7 @@ def callback(data:Float32MultiArray):
         print(f"4. Kanayama Result: {v_control = }, {steer_control = }")
     
     #조향각을 -1.0에서 1.0 범위로 변환
-    steer_normalized = steer_control/configs["max_steer"]
+    steer_normalized = -steer_control/configs["max_steer"]
     if steer_normalized > 1.0:
         steer_normalized = 1.0
     elif steer_normalized < -1.0:
