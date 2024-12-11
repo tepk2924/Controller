@@ -3,20 +3,24 @@
 import os
 import trimesh
 import numpy as np
+from typing import List
+
+def pc(csv_path: str,
+       color: list) -> trimesh.PointCloud:
+    data = []
+    with open(csv_path, "r") as f:
+        lines = f.readlines()
+    
+    for line in lines:
+        data.append(list(map(str, line.replace("\t", " ").replace("\n", " ").replace(",", " ").split())))
+    
+    return trimesh.PointCloud(np.array(data)[:, :3], colors=color)
 
 def main():
     scene = trimesh.Scene()
-    repo_dir = os.path.dirname(__file__)
-    with open(os.path.join(repo_dir, "path", "racing_line_midpoints.csv"), "r") as f:
-        lines = f.readlines()
-    ref_coords = np.array([list(map(float, line.replace(","," ").split())) for line in lines])[:, :3]
-    pc = trimesh.PointCloud(ref_coords, (255, 0, 0))
-    coor = [[-5, -24, 6]]
-    pc2 = trimesh.PointCloud(coor, (255, 255, 0))
-    scene.add_geometry(pc)
-    scene.add_geometry(pc2)
-    # path_geo = trimesh.load(os.path.join(repo_dir, "path", "mobilesystemcontrol.stl"))
-    # scene.add_geometry(path_geo)
+    scene.add_geometry(pc(input("원본 csv 파일 위치 : "), [255, 0, 0]))
+    scene.add_geometry(pc(input("PSO 최적화 csv 파일 위치 : "), [0, 255, 0]))
+    scene.add_geometry(pc(input("경사하강 최적화 csv 파일 위치 : "), [0, 0, 255]))
     scene.show()
 
 if __name__ == "__main__":
