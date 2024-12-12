@@ -12,15 +12,15 @@ def pc(csv_path: str,
         lines = f.readlines()
     
     for line in lines:
-        data.append(list(map(str, line.replace("\t", " ").replace("\n", " ").replace(",", " ").split())))
+        data.append(list(map(float, line.replace("\t", " ").replace("\n", " ").replace(",", " ").split())))
     
     return trimesh.PointCloud(np.array(data)[:, :3], colors=color)
 
 def main():
     scene = trimesh.Scene()
-    scene.add_geometry(pc(input("원본 csv 파일 위치 : "), [255, 0, 0]))
-    scene.add_geometry(pc(input("PSO 최적화 csv 파일 위치 : "), [0, 255, 0]))
-    scene.add_geometry(pc(input("경사하강 최적화 csv 파일 위치 : "), [0, 0, 255]))
+    scene.add_geometry(pc(input("csv 파일 1 위치 : "), [255, 0, 0]))
+    scene.add_geometry(pc(input("csv 파일 2 위치 : "), [0, 255, 0]))
+    scene.add_geometry(pc(input("csv 파일 3 위치 : "), [0, 0, 255]))
     scene.show()
 
 if __name__ == "__main__":

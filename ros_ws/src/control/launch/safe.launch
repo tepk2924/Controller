@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="control" type="controllernode.py" name="controllernode" respawn="false" output="screen"/>
+    <param name="path_name" type="str" value="safe"/>
+</launch>

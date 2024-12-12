@@ -12,3 +12,6 @@ L: 1.023 #Car length b/w wheels
 
 #Debugging Output
 debug_console_output: True
+
+#Danger_sector_vel
+danger_vel: 6.38

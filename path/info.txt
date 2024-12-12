@@ -1,0 +1,3 @@
+safe: long path, drive width 4.5m
+danger: short path, drive width 4.5m
+safer: long path, drive width 3.5m

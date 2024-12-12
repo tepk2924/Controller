@@ -87,7 +87,8 @@ def init():
     여기다가 waypoint들 (csv 파일 형식) 불러오는 코드를 넣을 것.
     '''
     repo_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-    with open(os.path.join(repo_dir, "path", "racing_line_midpoints.csv"), "r") as f:
+    path_name = rospy.get_param("path_name")
+    with open(os.path.join(repo_dir, "path", f"{path_name}.csv"), "r") as f:
         lines = f.readlines()
 
     #컨피그 yaml 파일 로드
@@ -95,7 +96,7 @@ def init():
     with open(os.path.join(repo_dir, "config.yaml")) as f:
         configs = yaml.safe_load(f)
 
-    #Only Contains X, Y, Z coordinate
+    #Contains X, Y, Z coordinate, then the sector value, and isdanger flag.
     waypoints_raw = [list(map(float, line.replace(","," ").split())) for line in lines]
 
     #만약 받은 파일의 시작 지점과 끝 지점이 같은 경우, 시작 지점을 삭제함.
@@ -120,7 +121,7 @@ def init():
                           curr_waypoint_raw[1],
                           0,
                           math.atan2(next_waypoint_raw[1] - prev_waypoint_raw[1], next_waypoint_raw[0] - prev_waypoint_raw[0]),
-                          configs["max_vel"],
+                          configs["max_vel"] if curr_waypoint_raw[4] < 0.5 else configs["danger_vel"],
                           #math.atan(signed_curvature(prev_waypoint_raw, curr_waypoint_raw, next_waypoint_raw)*configs["L"])
                           0))
 
