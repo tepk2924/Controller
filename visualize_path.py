@@ -20,7 +20,7 @@ def main():
     scene = trimesh.Scene()
     scene.add_geometry(pc(input("csv 파일 1 위치 : "), [255, 0, 0]))
     scene.add_geometry(pc(input("csv 파일 2 위치 : "), [0, 255, 0]))
-    scene.add_geometry(pc(input("csv 파일 3 위치 : "), [0, 0, 255]))
+    # scene.add_geometry(pc(input("csv 파일 3 위치 : "), [0, 0, 255]))
     scene.show()
 
 if __name__ == "__main__":

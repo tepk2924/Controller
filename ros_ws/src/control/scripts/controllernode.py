@@ -171,7 +171,7 @@ def callback(data:Float32MultiArray):
     if vel < v_control:
         throttle, brake = 1.0, 0.0
     elif vel > v_control:
-        throttle, brake = 0.0, 1.0
+        throttle, brake = 0.0, min(1.0, 0.1*(vel - v_control))
     else:
         throttle, brake = 0.0, 0.0
 
